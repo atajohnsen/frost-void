@@ -1,0 +1,40 @@
+* { font-family: "JetBrains Mono"; font-size: 12px; }
+window.frost-root { background: transparent; color: @foreground; }
+.island { background: @glass; border: 1px solid @border; border-radius: 22px; padding: 0 8px; box-shadow: inset 0 1px @shine; }
+button { background-image: none; background-color: transparent; color: @foreground; border: none; box-shadow: none; text-shadow: none; border-radius: 9px; min-height: 0; min-width: 0; padding: 8px 12px; }
+button:hover { background-color: alpha(@accent,0.11); }
+button:focus { outline: none; box-shadow: inset 0 0 0 1px alpha(@accent,0.6); }
+button:active { background-color: alpha(@accent,0.22); }
+.icon-button { padding: 6px; border-radius: 16px; min-width: 20px; min-height: 20px; }
+.os-button { margin-right: 3px; }
+.workspaces { padding: 0 5px; }
+.workspace { padding: 0; margin: 9px 3px; min-width: 18px; min-height: 18px; border: 1px solid transparent; border-radius: 20px; }
+.workspace-dot { font-size: 11px; color: alpha(@foreground,0.25); }
+.workspace.occupied .workspace-dot { color: @secondary; }
+.workspace.focused { border: 1px solid @accent; box-shadow: 0 0 6px 1px alpha(@accent,0.65); background: alpha(@accent,0.08); }
+.workspace.focused .workspace-dot { color: @accent; }
+.media-button { border-radius: 16px; padding: 6px 9px; margin-left: 4px; color: @tertiary; }
+.media-button label { font-size: 11px; }
+.clock { padding: 0 10px; font-size: 12px; font-weight: 500; }
+.tray button { padding: 5px 4px; }
+.tray image { -gtk-icon-style: symbolic; }
+.popup { background: @glass; color: @foreground; border: 1px solid @border; border-radius: 16px; padding: 18px; box-shadow: inset 0 1px @shine; }
+.heading { font-size: 16px; font-weight: bold; color: @foreground; }
+.muted { color: @muted; font-size: 11px; }
+.primary { background: alpha(@accent,0.15); color: @accent; border: 1px solid alpha(@accent,0.35); }
+entry { background: @raised; color: @foreground; border: 1px solid @border; border-radius: 8px; padding: 10px; box-shadow: none; caret-color: @accent; }
+entry:focus { border-color: @accent; }
+list, row, flowbox, flowboxchild, viewport, scrolledwindow { background: transparent; color: @foreground; }
+row { border-radius: 8px; }
+row:selected, flowboxchild:selected { background: alpha(@accent,0.15); color: @foreground; border-radius: 10px; }
+row:hover { background: alpha(@accent,0.08); }
+.app-row { padding: 10px; }
+.wallpaper-card { padding: 7px; border: 1px solid @border; border-radius: 10px; }
+flowboxchild:selected .wallpaper-card { border-color: @accent; box-shadow: 0 0 5px alpha(@accent,0.35); }
+scrollbar { background: transparent; }
+scrollbar slider { background: alpha(@accent,0.35); border-radius: 8px; min-width: 5px; min-height: 18px; }
+scale trough { background: alpha(@foreground,0.12); border-radius: 5px; min-height: 5px; }
+scale highlight { background: @accent; border-radius: 5px; }
+scale slider { background: @accent; border: 2px solid @surface; border-radius: 20px; min-width: 11px; min-height: 11px; }
+tooltip, menu { background: @surface; color: @foreground; border: 1px solid @border; border-radius: 8px; }
+tooltip label { padding: 4px; }

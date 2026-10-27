@@ -1,0 +1,11 @@
+{
+  "wallpapers": "~/Pictures/wallpapers",
+  "minimum_workspaces": 4,
+  "blur_strength": 0.75,
+  "surface_opacity": 0.83,
+  "terminal_opacity": 0.90,
+  "window_opacity": 0.97,
+  "font": "JetBrains Mono",
+  "font_size": 11,
+  "natural_scroll": true
+}

@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+export PATH="$HOME/.local/bin:$PATH"
+export XDG_CURRENT_DESKTOP=sway
+export XDG_SESSION_DESKTOP=sway
+export XDG_SESSION_TYPE=wayland
+export MOZ_ENABLE_WAYLAND=1
+export QT_QPA_PLATFORM=wayland
+# qt6ct also advertises the qt5ct key, so both Qt generations find their plugin.
+export QT_QPA_PLATFORMTHEME=qt5ct
+export XCURSOR_THEME=Adwaita
+export XCURSOR_SIZE=24
+export LIBSEAT_BACKEND=logind
+export LANG="${LANG:-en_US.UTF-8}"
+export LC_TIME=en_US.UTF-8
+: "${XDG_RUNTIME_DIR:?Log out and in after enabling elogind; XDG_RUNTIME_DIR is missing}"
+frostctl init
+if [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
+    exec sway
+else
+    exec dbus-run-session sway
+fi

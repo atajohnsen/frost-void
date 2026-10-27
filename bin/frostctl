@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+"""Installed next to Frost modules, also runnable directly from the bundle."""
+import os
+from pathlib import Path
+import sys
+
+here=Path(__file__).resolve().parent
+module_dir=here if (here/'core.py').exists() else here.parent/'share/frost'
+sys.path.insert(0,str(module_dir))
+from ctl import main
+
+try:
+    sys.exit(main())
+except Exception as error:
+    print('frostctl:',error,file=sys.stderr)
+    sys.exit(1)

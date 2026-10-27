@@ -1,0 +1,153 @@
+# Frost / Void + SwayFX 0.6. Read README.md before starting this session.
+set $mod Mod4
+set $term exec frostctl terminal
+font pango:JetBrains Mono 10
+
+output * scale 1
+output * bg #111315 solid_color
+input type:keyboard {
+    xkb_layout no
+    xkb_model pc105
+}
+input type:pointer {
+    accel_profile flat
+    pointer_accel 0
+}
+input type:touchpad {
+    accel_profile flat
+    pointer_accel 0
+    tap enabled
+    dwt enabled
+    natural_scroll enabled
+    scroll_method two_finger
+    click_method clickfinger
+}
+
+gaps inner 8
+gaps outer 8
+default_border pixel 2
+default_floating_border pixel 2
+hide_edge_borders none
+corner_radius 12
+shadows enable
+shadows_on_csd enable
+shadow_blur_radius 24
+shadow_offset 0 3
+default_dim_inactive 0.02
+titlebar_separator disable
+animation_duration_ms 140
+focus_follows_mouse no
+mouse_warping none
+focus_wrapping yes
+floating_modifier $mod normal
+workspace_auto_back_and_forth no
+default_orientation auto
+
+include ~/.config/frost/generated/effects.conf
+include ~/.config/frost/generated/sway-colors.conf
+include ~/.config/frost/generated/wallpaper.conf
+
+layer_effects "frost-panel" {
+    blur enable;
+    blur_ignore_transparent enable;
+    shadows enable;
+    corner_radius 22;
+}
+layer_effects "frost-popup" {
+    blur enable;
+    blur_ignore_transparent enable;
+    shadows enable;
+    corner_radius 16;
+}
+layer_effects "swaync-control-center" {
+    blur enable;
+    blur_ignore_transparent enable;
+    corner_radius 16;
+}
+layer_effects "swaync-notification-window" {
+    blur enable;
+    blur_ignore_transparent enable;
+    corner_radius 14;
+}
+
+# keyd emits F13 for a bare Super tap, preserving Super combinations.
+bindsym F13 exec frostctl launcher
+bindsym $mod+space exec frostctl launcher
+bindsym $mod+Return $term
+bindsym $mod+w exec firefox
+bindsym $mod+e exec frostctl files
+bindsym $mod+o exec frostctl theme toggle
+bindsym $mod+Shift+w exec frostctl wallpaper
+bindsym $mod+Shift+s exec frostctl screenshot
+bindsym $mod+v exec frostctl clipboard
+bindsym $mod+n exec swaync-client -t -sw
+bindsym $mod+Shift+n exec swaync-client -d -sw
+bindsym $mod+Escape exec frostctl power
+bindsym $mod+Ctrl+l exec frostctl lock
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+space floating toggle
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+bindsym $mod+b splith
+bindsym $mod+Shift+b splitv
+bindsym $mod+t layout toggle split tabbed
+bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+minus move scratchpad
+
+# Physical number-row codes avoid Norwegian shifted-symbol ambiguities.
+bindcode $mod+10 workspace number 1
+bindcode $mod+11 workspace number 2
+bindcode $mod+12 workspace number 3
+bindcode $mod+13 workspace number 4
+bindcode $mod+14 workspace number 5
+bindcode $mod+15 workspace number 6
+bindcode $mod+16 workspace number 7
+bindcode $mod+17 workspace number 8
+bindcode $mod+18 workspace number 9
+bindcode $mod+Shift+10 move container to workspace number 1
+bindcode $mod+Shift+11 move container to workspace number 2
+bindcode $mod+Shift+12 move container to workspace number 3
+bindcode $mod+Shift+13 move container to workspace number 4
+bindcode $mod+Shift+14 move container to workspace number 5
+bindcode $mod+Shift+15 move container to workspace number 6
+bindcode $mod+Shift+16 move container to workspace number 7
+bindcode $mod+Shift+17 move container to workspace number 8
+bindcode $mod+Shift+18 move container to workspace number 9
+bindsym --whole-window $mod+button4 workspace prev
+bindsym --whole-window $mod+button5 workspace next
+bindgesture swipe:3:left workspace next
+bindgesture swipe:3:right workspace prev
+# Leave pinch gestures unbound so Firefox/other native apps can receive them.
+
+bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 3%+
+bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%-
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym XF86AudioMicMute exec wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+bindsym XF86AudioPlay exec playerctl --player=spotify,%any play-pause
+bindsym XF86AudioNext exec playerctl --player=spotify,%any next
+bindsym XF86AudioPrev exec playerctl --player=spotify,%any previous
+bindsym XF86MonBrightnessUp exec brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym XF86PowerOff exec frostctl power
+
+for_window [app_id="^.*pavucontrol$"] floating enable, resize set width 760 height 500
+for_window [app_id="^.*nm-connection-editor$"] floating enable, resize set width 760 height 500
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="dialog"] floating enable
+for_window [title="Picture-in-Picture"] floating enable, sticky enable
+
+# Run once; theme changes reload Sway without restarting the desktop daemons.
+exec frost-start

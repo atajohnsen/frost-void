@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+"""Session-scoped process supervisor, launched once by Sway (never systemd)."""
+import fcntl
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import time
+
+base=Path(os.environ.get('XDG_DATA_HOME',str(Path.home()/'.local/share')))/'frost'
+sys.path.insert(0,str(base))
+from core import RUNTIME,CACHE,state,command,quote
+
+RUNTIME.mkdir(parents=True,exist_ok=True,mode=0o700)
+CACHE.mkdir(parents=True,exist_ok=True)
+guard=(RUNTIME/'session.lock').open('w')
+try:
+    fcntl.flock(guard,fcntl.LOCK_EX|fcntl.LOCK_NB)
+except BlockingIOError:
+    sys.exit(0)
+
+log=(CACHE/'session.log').open('a',buffering=1)
+children=[]
+running=True
+def start(argv,essential=False):
+    try:
+        p=subprocess.Popen(argv,stdout=log,stderr=log)
+        children.append((p,argv,essential))
+        return p
+    except OSError as error:
+        print(f'{argv[0]}: {error}',file=log)
+
+def stop(*_):
+    global running
+    running=False
+
+signal.signal(signal.SIGTERM,stop)
+signal.signal(signal.SIGINT,stop)
+subprocess.run(['dbus-update-activation-environment','DISPLAY','WAYLAND_DISPLAY',
+                'SWAYSOCK','XDG_CURRENT_DESKTOP','XDG_SESSION_TYPE'],stdout=log,stderr=log)
+
+# The two handbook example snippets make pipewire spawn WirePlumber and pulse.
+# Starting those three separately would create duplicate audio daemons.
+start(['pipewire'],True)
+start(['swaync'],True)
+agent=next((p for p in ['/usr/libexec/polkit-gnome-authentication-agent-1',
+                      '/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1'] if Path(p).exists()),None)
+if agent:
+    start([agent],True)
+start(['wl-paste','--type','text','--watch','cliphist','store'],True)
+start(['wl-paste','--type','image','--watch','cliphist','store'],True)
+start(['swayidle','-w','timeout','2400','frostctl lock',
+       'before-sleep','frostctl lock','lock','frostctl lock'],True)
+start(['frostctl','panel'],True)
+
+# A Sway IPC socket disappears on logout, even when a pre-existing D-Bus session
+# remains alive. Stop our children when that happens.
+socket_path=Path(os.environ['SWAYSOCK'])
+try:
+    while running and socket_path.exists():
+        time.sleep(2)
+        for p,argv,essential in list(children):
+            if p.poll() is not None:
+                children.remove((p,argv,essential))
+                print(f'{argv[0]} exited: {p.returncode}',file=log)
+                # Delay restarts so a broken config cannot enter a tight loop.
+                if essential and running:
+                    start(argv,essential)
+finally:
+    for p,_,_ in children:
+        if p.poll() is None:
+            p.terminate()
+    for p,_,_ in children:
+        try:
+            p.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            p.kill()
+    (RUNTIME/'control.sock').unlink(missing_ok=True)
